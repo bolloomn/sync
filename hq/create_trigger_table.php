@@ -1,14 +1,6 @@
 <?php
 include "../config.php";
-$conn_b = connOutlet();
-$conn_a=connHq();
-
-$select="SELECT max(id)+1 as id FROM `organization`";
-$query=mysqli_query($conn_a, $select);
-$row=mysqli_fetch_object($query);
-if(is_null($row->id)){ $AID=100000000000; }
-else { $AID=$row->id.'00000000001'; }
-mysqli_close($conn_a);
+$conn_b = connA();
 
 
 
@@ -17,16 +9,28 @@ $query_table_list=mysqli_query($conn_b, 'show tables');
 
 while($table = mysqli_fetch_row($query_table_list)){
 
+    $not= array('table_logs', 'table_log_sync', 'table_log_error', 'unit', 'employee_sessions', 'table_log_error', 'hq_user' , 'ci_sessions');
 
+    if(!in_array( $table[0],  $not)){
 
-    $not= array('table_logs', 'table_log_sync', 'brand', 'employee_sessions', 'table_log_error', 'hq_user' , 'ci_sessions',  'organization_type', 'user_group');
+	mysqli_query($conn_b, "DROP TRIGGER IF EXISTS `trigger_".$table[0]."_insert_id`");
+	//ID TOOTSOOLOH
+	$trigger = "
+	CREATE  TRIGGER `trigger_".$table[0]."_insert_id` 
+	BEFORE INSERT ON `".$table[0]."` 
+	FOR EACH ROW BEGIN 
+		IF((SELECT COUNT(0) FROM ".$table[0]." WHERE id<100000000000)=0) THEN 
+			SET NEW.id=1; 
+		ELSEIF(NEW.id is NULL) THEN 
+			SET NEW.id = (SELECT MAX(id) + 1 FROM ".$table[0]." WHERE id <100000000000); 
+		END IF; 
+	END
+	";
+	echo $trigger.'<br><br>';
+	mysqli_query($conn_b, $trigger);
+  	echo "created trigger trigger_".$table[0]."_insert_id <br>";
 
-    if(!in_array( $table[0],  $not)) {
-
-    mysqli_query($conn_b, 'ALTER TABLE ' . $table[0] . ' AUTO_INCREMENT=' . $AID);
-    echo "created " . $table[0] . " AUTO_INCREMENT <br>";
-
-	//insert trigger
+    //insert trigger
 	mysqli_query($conn_b, "
 	CREATE TRIGGER `trigger_".$table[0]."_insert`
 	AFTER INSERT ON `".$table[0]."`
@@ -57,5 +61,6 @@ while($table = mysqli_fetch_row($query_table_list)){
     }
 
 }
+
 mysqli_close($conn_b);
 ?>

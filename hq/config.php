@@ -8,7 +8,7 @@ return $connB;
 }
 
 function connA(){
-    $connA=mysqli_connect('localhost', 'root', '', 'eisol') or die("Error " . mysqli_error($connA));
+    $connA=mysqli_connect('192.168.0.107', 'root', '', 'tunglok_hq') or die("Error " . mysqli_error($connA));
     mysqli_set_charset($connA,"utf8");
     return $connA;
 }

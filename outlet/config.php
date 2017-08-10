@@ -5,13 +5,13 @@ function orgID(){
 }
 
 function connOutlet(){
-    $connB = mysqli_connect('localhost', 'root', '', 'outlet') or die("Error " . mysqli_error($connB));
+    $connB = mysqli_connect('localhost', 'root', '', 'tunglok_outlet') or die("Error " . mysqli_error($connB));
     mysqli_set_charset($connB,"utf8");
 return $connB;
 }
 
 function connHq(){
-    $connA=mysqli_connect('localhost', 'root', '', 'eisol') or die("Error " . mysqli_error($connA));
+    $connA=mysqli_connect('116.14.130.119', 'root', 'vantage1011', 'tunglok_hq') or die("Error " . mysqli_error($connA));
     mysqli_set_charset($connA,"utf8");
     return $connA;
 }
@@ -31,16 +31,9 @@ function grab_image($url,$saveto){
 
 }
 
-
-
-
 function insert_image($table, $row){
-//    $url='http://101.100.166.208/iRestaurant_v4/uploads/';
-//    $dir="/Applications/XAMPP/xamppfiles/htdocs/outlet/uploads/";
-    echo $table; var_dump($row);
-    $url='http://192.168.1.104/uat/iRestaurant_v4/uploads/';
-    $dir="/Applications/XAMPP/xamppfiles/htdocs/outlet/iRestaurant_v4/uploads/";
-
+    $url='http://eisol.co:8080/uat/iRestaurant_v4/uploads/';
+    $dir="/Applications/XAMPP/xamppfiles/htdocs/iRestaurant_v4/uploads/";
 
     if($table=='item'){
         if(!is_null($row['image'])){
@@ -48,20 +41,21 @@ function insert_image($table, $row){
         }
     } elseif($table=='product' or $table=='set_menu') {
         if(!is_null($row['image'])){
-            grab_image($url.'product/thumbs/'.$row['image'], $dir.'product/'.$row['image']);
-           // grab_image($url.'product/thumbs/'.$row['image'], $dir.'product/thumbs/'.$row['image']);
+            grab_image($url.'product/'.$row['image'], $dir.'product/'.$row['image']);
         }
-    } elseif ($table=='organization'){
-        if(!is_null($row['order_screen_image'])){
-            grab_image($url.'order_screen/'.$row['order_screen_image'], $dir.'order_screen/'.$row['order_screen_image']);
+    } elseif($table=='addons'){
+        if(!is_null($row['image'])){
+            grab_image($url.'addons/'.$row['image'], $dir.'addons/'.$row['image']);
         }
-        if(!is_null($row['shift_screen_image'])){
-            grab_image($url.'shift_screen/'.$row['shift_screen_image'], $dir.'shift_screen/'.$row['shift_screen_image']);
+    } elseif($table=='employee'){
+        if(!is_null($row['avatar'])){
+            grab_image($url.'avatar/'.$row['avatar'], $dir.'avatar/'.$row['avatar']);
         }
-        if(!is_null($row['logo_image'])){
-            grab_image($url.'logo/'.$row['logo_image'], $dir.'logo/'.$row['logo_image']);
+        if(!is_null($row['pass_image'])){
+            grab_image($url.'pass/'.$row['pass_image'], $dir.'pass/'.$row['pass_image']);
         }
     }
+
 }
 
 
